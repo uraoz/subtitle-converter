@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0f6cbd">
+<title>Subtitle Converter - SRT VTT</title>
+<style>
+  :root { color-scheme: light dark; --accent:#0f6cbd; --border:#8886; --muted:#888; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding: 24px; max-width: 860px; margin-inline: auto; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; font-size: .92rem; }
+  #drop {
+    border: 2px dashed var(--border); border-radius: 12px; padding: 40px 20px;
+    text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  #drop.dragover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  #drop p { margin: 4px 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin: 18px 0; }
+  .row label { font-size: .9rem; display: flex; gap: 8px; align-items: center; }
+  input[type=number], select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: inherit; }
+  input[type=number] { width: 7.5em; }
+  button {
+    font: inherit; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--accent); color: #fff; cursor: pointer;
+  }
+  button.secondary { background: transparent; color: inherit; }
+  button:disabled { opacity: .45; cursor: default; }
+  ul#list { list-style: none; padding: 0; margin: 0; }
+  ul#list li { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; }
+  .meta { flex: 1; min-width: 0; }
+  .meta .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta .detail { font-size: .82rem; color: var(--muted); }
+  .status { font-size: .82rem; text-align: right; }
+  .status.error { color: #c50f1f; }
+  .status.done { color: #2e7d32; }
+  .note { font-size: .8rem; color: var(--muted); margin-top: 24px; }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 data-i18n="title">SRT ⇄ WebVTT Subtitle Converter</h1>
+      <p class="sub" data-i18n="sub">Convert subtitles and shift timing. 100% offline — files never leave this device.</p>
+    </div>
+    <select id="lang" aria-label="Language"><option value="en">English</option><option value="ja">日本語</option></select>
+  </header>
+
+  <div id="drop" tabindex="0" role="button">
+    <p><strong data-i18n="dropTitle">Drop subtitle files here</strong></p>
+    <p data-i18n="dropHint">or click to choose files (.srt, .vtt)</p>
+  </div>
+  <input type="file" id="picker" accept=".srt,.vtt,text/vtt,application/x-subrip" multiple hidden>
+
+  <div class="row">
+    <label><span data-i18n="output">Output</span>
+      <select id="to">
+        <option value="auto" data-i18n="auto">Auto (SRT ⇄ VTT)</option>
+        <option value="vtt">WebVTT</option>
+        <option value="srt">SRT</option>
+      </select>
+    </label>
+    <label><span data-i18n="shift">Shift</span>
+      <input type="number" id="shiftVal" value="0" step="any" inputmode="decimal">
+      <select id="shiftUnit"><option value="1000" data-i18n="sec">seconds</option><option value="1" data-i18n="ms">milliseconds</option></select>
+    </label>
+    <button id="clearBtn" class="secondary" disabled data-i18n="clear">Clear</button>
+  </div>
+  <p class="sub" data-i18n="shiftHelp">Shift applies to every file. Positive = later, negative = earlier.</p>
+
+  <ul id="list"></ul>
+
+  <p class="note" data-i18n="note">Free · No ads · Files never leave your PC. UTF-8 files only (BOM is handled). VTT header, NOTE and STYLE blocks are dropped when converting.</p>
+
+<script src="core.js"></script>
+<script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
